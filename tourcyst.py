@@ -9,7 +9,7 @@ rome2rio_key = 'yTPnfnRY'
 def autocomplete():
     query = request.args.get('query', '')
     data = get_autocomplete(query)
-    return data
+    return jsonify(data)
 
 @app.route('/search')
 def search():
@@ -20,19 +20,18 @@ def search():
       data = get_all_search(oName, dName)
     else:
       data = "Specify from and to locations"
-    return data
+    return jsonify(data)
   
 @app.route('/geocode')
 def geocode():
     query = request.args.get('query', '')
     data = get_geocode(query)
-    return data
+    return jsonify(data)
 
 def get_geocode(query):
     payload = {"key":rome2rio_key, "query":query}
     response = requests.get("http://free.rome2rio.com/api/1.4/json/Geocode", params=payload)
-    response = response.json()
-    return response
+    return response.json()
 
 def get_all_search(place1, place2):
     payload = {"key":rome2rio_key, "oName" : place1, "dName": place2}
