@@ -148,6 +148,7 @@ def get_metrics_for_search(place1, place2):
       route = {}
       route["id"] = i
       route["name"] = routes[i]["name"]
+      route["distance"] = routes[i][]
       route["totalDuration"]  = routes[i]["totalDuration"]
       route["totalTransitDuration"]  = routes[i]["totalTransitDuration"]
       route["indicativePrice"] = routes[i]["indicativePrices"][0]["price"]
@@ -157,7 +158,8 @@ def get_metrics_for_search(place1, place2):
 
 
 def get_recommended_central(place1, place2, place3):
-    centrals = get_places(find_centriod(place1, place2, place3)):
+    centrals = get_places(find_centriod(place1, place2, place3))
+
     return central
 
 
