@@ -89,6 +89,7 @@ def get_places(pnt):
         dict={'lat': data["results"][i]["geometry"]["location"]["lat"], 'lng':data["results"][i]["geometry"]["location"]["lng"], 
                  'name':data["results"][i]["name"]}
         places.append(dict)
+    print("Places: " + str(places))
     return places
 
 
@@ -123,7 +124,7 @@ def get_fastest_central(place1, place2, place3):
         transit_map["name"] = c["name"]
         transit_map["total_transit"] = transit1 + transit2 + transit3
         transits.append(transit_map)
-    best_location = get_best_transit_central(transits)
+    best_location = get_fastest_transit_central(transits)
 
 
 
@@ -138,7 +139,8 @@ def get_cheapest_central(place1, place2, place3):
         transit_map["name"] = c["name"]
         transit_map["total_price"] = price1 + price2 + price3
         transits.append(transit_map)
-    best_location = get_best_transit_central(transits)
+    best_location = get_cheapest_transit_central(transits)
+    print("cheapest central: " + best_location)
 
 
 def get_metrics_for_search(place1, place2):
@@ -148,7 +150,6 @@ def get_metrics_for_search(place1, place2):
       route = {}
       route["id"] = i
       route["name"] = routes[i]["name"]
-      route["distance"] = routes[i][]
       route["totalDuration"]  = routes[i]["totalDuration"]
       route["totalTransitDuration"]  = routes[i]["totalTransitDuration"]
       route["indicativePrice"] = routes[i]["indicativePrices"][0]["price"]
@@ -159,7 +160,7 @@ def get_metrics_for_search(place1, place2):
 
 def get_recommended_central(place1, place2, place3):
     centrals = get_places(find_centriod(place1, place2, place3))
-
+    # TODO: Recommender logic goes here
     return central
 
 
@@ -191,7 +192,7 @@ def get_recommended_central(place1, place2, place3):
 
 
 # find_centriod("Munich", "Madrid", "Paris")
-# get_cheapest_route("Munich", "Madrid", "Paris")
+get_cheapest_central("Munich", "Madrid", "Paris")
 # get_fastest_route("Munich", "Madrid", "Paris")
 # print(get_metrics_for_search("Munich", "Paris"))
 
