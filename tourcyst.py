@@ -1,10 +1,20 @@
 from flask import Flask, jsonify, request
 import requests
+from math import cos, sin, atan2, sqrt
 import json
 
 app = Flask(__name__)
 rome2rio_key = 'yTPnfnRY'
- 
+
+
+def center_geolocation(geolocations):
+    lat = []
+    lng = []
+    for l in geolocations:
+        lat.append(l[0])
+        lng.append(l[1])
+    return (sum(lat)/len(lat), sum(lng)/len(lng))
+
 @app.route('/auto/')
 def autocomplete():
     query = request.args.get('query', '')
@@ -45,10 +55,19 @@ def get_autocomplete(query):
     data = response.json()
     return data
 
-def get_cheapest_route(place1, place2):
-    search_data = get_all_search(place1, place2)
-    price = search_data["routes"][0]["indicativePrices"][0]['price']
-    return price
+
+def find_centriod(place1, place2, place3):
+    place1_loc = get_geocode(place1)
+    place2_loc = get_geocode(place2)
+    place3_loc = get_geocode(place3)
+    place1_pair = (place1_loc["places"][0]["lat"], place1_loc["places"][0]["lng"])
+    place2_pair = (place2_loc["places"][0]["lat"], place2_loc["places"][0]["lng"])
+    place3_pair = (place3_loc["places"][0]["lat"], place3_loc["places"][0]["lng"])
+    print(place1_pair, place2_pair, place3_pair)
+    print(center_geolocation([place1_pair, place2_pair, place3_pair]))
+
+
+find_centriod("Munich", "Berlin", "Hyderabad")
 
 
 # # TODO: Rewrite to get_best_destination(place1, place2, place3)
