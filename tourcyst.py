@@ -10,10 +10,13 @@ rome2rio_key = 'yTPnfnRY'
 def center_geolocation(geolocations):
     lat = []
     lng = []
+    coordinates = {}
     for l in geolocations:
         lat.append(l[0])
         lng.append(l[1])
-    return (sum(lat)/len(lat), sum(lng)/len(lng))
+    coordinates['lat'] = sum(lat)/len(lat)
+    coordinates['lng'] = sum(lng)/len(lng)
+    return coordinates
 
 @app.route('/auto/')
 def autocomplete():
@@ -64,10 +67,20 @@ def find_centriod(place1, place2, place3):
     place2_pair = (place2_loc["places"][0]["lat"], place2_loc["places"][0]["lng"])
     place3_pair = (place3_loc["places"][0]["lat"], place3_loc["places"][0]["lng"])
     print(place1_pair, place2_pair, place3_pair)
-    print(center_geolocation([place1_pair, place2_pair, place3_pair]))
+    central = center_geolocation([place1_pair, place2_pair, place3_pair])
+    print(central)
+    return central
 
 
-find_centriod("Munich", "Berlin", "Hyderabad")
+def get_places(pnt):
+    lat_lng_str = str(pnt['lat']) + ',' + str(pnt["lng"])
+    payload = {"location": lat_lng_str,"radius":500,"type":"airports","key": "AIzaSyCNa0G19BABRTzrn2AyO6VyClwhM3iilOw"}
+    response = requests.get("https://maps.googleapis.com/maps/api/place/nearbysearch/json", params=payload)
+    print(response.places)
+    # return response.json()
+
+# find_centriod("Munich", "Madrid", "Paris")
+get_places(find_centriod("Munich", "Madrid", "Paris"))
 
 
 # # TODO: Rewrite to get_best_destination(place1, place2, place3)
