@@ -26,7 +26,7 @@ def search():
 def geocode():
     query = request.args.get('query', '')
     data = get_geocode(query)
-    return data
+    return data.json()
 
 def get_geocode(query):
     payload = {"key":rome2rio_key, "query":query}
