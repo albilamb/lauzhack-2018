@@ -26,15 +26,13 @@ def search():
 def geocode():
     query = request.args.get('query', '')
     data = get_geocode(query)
-    return data.json()
+    return data
 
 def get_geocode(query):
     payload = {"key":rome2rio_key, "query":query}
     response = requests.get("http://free.rome2rio.com/api/1.4/json/Geocode", params=payload)
     response = response.json()
-    lat = response["places"][0]["lat"]
-    lng = response["places"][0]["lng"]
-    return str({"lat":lat, "longName" : response["places"][0]["longName"], "lng": lng})
+    return response
 
 def get_all_search(place1, place2):
     payload = {"key":rome2rio_key, "oName" : place1, "dName": place2}
