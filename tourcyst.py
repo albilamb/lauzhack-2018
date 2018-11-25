@@ -29,7 +29,6 @@ def update_marker():
 
 @app.route('/')
 def entry():
-  
   return render_template('index.html', mymap=mymap)
 
 @app.route('/auto/')
