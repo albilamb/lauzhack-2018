@@ -1,14 +1,42 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
+from flask_googlemaps import GoogleMaps, Map
 import requests
 from math import cos, sin, atan2, sqrt
 import json
-import numpy as np
-import pandas as pd
-
 
 app = Flask(__name__)
 rome2rio_key = 'yTPnfnRY'
 
+# Initialize the extension
+GoogleMaps(app, key='AIzaSyDC5ccjS1Ig0lO8nzqVWUyNTgHv5PnBfFE')
+
+mymap = Map(
+        identifier="view-side",
+        lat=46.537504,
+        lng=6.613019,
+        varname="jsmap"
+)
+
+
+def center_geolocation(geolocations):
+    lat = []
+    lng = []
+    for l in geolocations:
+        lat.append(l[0])
+        lng.append(l[1])
+    return (sum(lat)/len(lat), sum(lng)/len(lng))
+
+@app.route('/update-marker')
+def update_marker():
+  lat = request.args.get('lat', '')
+  lng = request.args.get('lng', '')
+  mymap.add_marker(lat=float(lat), lng=float(lng))
+  return jsonify(success=True)
+
+@app.route('/')
+def entry():
+  
+  return render_template('index.html', mymap=mymap)
 
 @app.route('/auto/')
 def autocomplete():
@@ -296,6 +324,7 @@ def get_recommended_central(place1, place2, place3):
 # get_fastest_route("Munich", "Madrid", "Paris")
 # print(get_metrics_for_search("Munich", "Paris"))
 
+find_centriod("Munich", "Berlin", "Hyderabad")
 
 # # TODO: Rewrite to get_best_destination(place1, place2, place3)
 # def get_best_destination():
