@@ -131,17 +131,23 @@ def get_cheapest_central(place1, place2, place3):
     transits = []
     for c in central:
         transit_map = {}
-        price1 = get_all_search(place1, c["name"])["routes"][0]["indicativePrices"][0]["price"]
-        price2 = get_all_search(place1, c["name"])["routes"][0]["indicativePrices"][0]["price"]
-        price3 = get_all_search(place1, c["name"])["routes"][0]["indicativePrices"][0]["price"]
-        transit_map["name"] = c["name"]
-        transit_map["total_price"] = price1 + price2 + price3
-        print("name: " + c["name"] + ", " +
-              "price: " + str(price1 + price2 + price3))
-        transits.append(transit_map)
-
-    best_location = get_cheapest_transit_central(transits)
-    return best_location
+        indicative1 = get_all_search(place1, c["name"])["routes"][0]
+        indicative2 = get_all_search(place1, c["name"])["routes"][0]
+        indicative3 = get_all_search(place1, c["name"])["routes"][0]
+        if("indicativePrices" in indicative1) and ("indicativePrices" in indicative2) and ("indicativePrices" in indicative3):
+            price1 = indicative1["indicativePrices"][0]['price']
+            price2 = indicative2["indicativePrices"][0]['price']
+            price3 = indicative3["indicativePrices"][0]['price']
+            transit_map["name"] = c["name"]
+            transit_map["total_price"] = price1 + price2 + price3
+            # print("name: " + c["name"] + ", " +
+            #       "price: " + str(price1 + price2 + price3))
+            transits.append(transit_map)
+    if not transits:
+        return get_fastest_central(place1, place2, place3)
+    else:
+        best_location = get_cheapest_transit_central(transits)
+        return best_location
 
 
 def center_geolocation(geolocations):
@@ -195,6 +201,32 @@ def find_centriod(place1, place2, place3):
     return central
 
 
+def get_more_places(pnt):
+    lat_lng_str = str(pnt['lat']) + ',' + str(pnt["lng"])
+    payload = {"location": lat_lng_str, "radius": 50,
+               "type": "airports", "key": "AIzaSyCNa0G19BABRTzrn2AyO6VyClwhM3iilOw"}
+    response = requests.get(
+        "https://maps.googleapis.com/maps/api/place/nearbysearch/json", params=payload)
+    # place = {"name": response.json()['results'][0]["name"], "lat": response.json()['results'][0]["geometry"]["location"]["lat"], "lng": response.json()['results'][0]["geometry"]["location"]["lng"]}
+    # print(place)
+    data = response.json()
+    places = []
+    length = len(data['results'])
+    if length >= 5:
+        for i in range(5):
+            dict = {}
+            dict = {'lat': data["results"][i]["geometry"]["location"]["lat"], 'lng': data["results"][i]["geometry"]["location"]["lng"],
+                    'name': data["results"][i]["name"], "exotic": True}
+            places.append(dict)
+    else:
+        for i in range(length):
+            dict = {}
+            dict = {'lat': data["results"][i]["geometry"]["location"]["lat"], 'lng': data["results"][i]["geometry"]["location"]["lng"],
+                    'name': data["results"][i]["name"], "exotic": True}
+            places.append(dict)
+    return places
+
+
 def get_places(pnt, place1, place2, place3):
     lat_lng_str = str(pnt['lat']) + ',' + str(pnt["lng"])
     payload = {"location": lat_lng_str, "radius": 500, "type": "airports",
@@ -223,7 +255,6 @@ def get_places(pnt, place1, place2, place3):
         l += [{'lat': row['lat'], 'lng': row['lng'], 'name': row['name']}]
 
     response = l
-#    data=response.json()
     data = response
     places = []
     length = len(data)
@@ -232,18 +263,9 @@ def get_places(pnt, place1, place2, place3):
         dict = {'lat': data[i]["lat"], 'lng': data[i]["lng"],
                 'name': data[i]["name"]}
         places.append(dict)
-    # print("Places: " + str(data))
+    more_places = get_more_places(pnt)
+    places = places + more_places
     return places
-
-#    return response
-#    length=len(data['results'])
-#    for i in range(length):
-#        dict = {}
-#        dict={'lat': data["results"][i]["geometry"]["location"]["lat"], 'lng':data["results"][i]["geometry"]["location"]["lng"],
-#                 'name':data["results"][i]["name"]}
-#        places.append(dict)
-#    print("Places: " + str(places))
-#    return places
 
 
 def get_fastest_transit_central(transits):
@@ -324,43 +346,3 @@ def cent1(place1,place2):
     optimised=int(length/2)
     return sorted_list[optimised]
     #print statistics.median(my_dict2[0])#, key=lambda k: k['Duration'])#sorted(my_dict2, key=lambda k: k['Duration'])
-
-
-# def get_cheapest_route(place1, place2, place3):
-#     print("Places: " + str(place1) + " " + str(place2) + " " + str(place3))
-#     central = get_places(find_centriod(place1, place2, place3))
-#     print("Best fit place: " + str(central))
-#     best_cost_from_place1 = get_all_search(place1, central["name"])["routes"][0]["indicativePrices"][0]["price"]
-#     best_cost_from_place2 = get_all_search(place2, central["name"])["routes"][0]["indicativePrices"][0]["price"]
-#     best_cost_from_place3 = get_all_search(place3, central["name"])["routes"][0]["indicativePrices"][0]["price"]
-
-#     print("Costs from each place is " + str(best_cost_from_place1) + " " + str(best_cost_from_place2) + " " + str(best_cost_from_place3) + " USD respectively")
-
-
-# def get_fastest_route(place1, place2, place3):
-#     print("Places: " + str(place1) + " " + str(place2) + " " + str(place3))
-#     central = get_places(find_centriod(place1, place2, place3))
-#     print("Best fit place: " + str(central))
-#     best_cost_from_place1 = get_all_search(place1, central["name"])["routes"][0]["totalTransitDuration"]
-#     best_cost_from_place2 = get_all_search(place2, central["name"])["routes"][0]["totalTransitDuration"]
-#     best_cost_from_place3 = get_all_search(place3, central["name"])["routes"][0]["totalTransitDuration"]
-
-#     print("Distances from each place is " + str(best_cost_from_place1) + " " + str(best_cost_from_place2) + " " + str(best_cost_from_place3) + "minutes respectively")
-
-
-# find_centriod("Munich", "Madrid", "Paris")
-# print(get_cheapest_central("Munich", "Madrid", "Paris"))
-# get_fastest_route("Munich", "Madrid", "Paris")
-# print(get_metrics_for_search("Munich", "Paris"))
-
-# find_centriod("Munich", "Berlin", "Hyderabad")
-
-# # TODO: Rewrite to get_best_destination(place1, place2, place3)
-# def get_best_destination():
-#     cost_from_place1 = get_cheapest_route('munich', 'rome') + get_cheapest_route('paris', 'rome') + get_cheapest_route('london', 'rome')
-#     cost_from_place2 = get_cheapest_route('munich', 'berlin') + get_cheapest_route('paris', 'berlin') + get_cheapest_route('london', 'berlin')
-#     cost_from_place3 = get_cheapest_route('munich', 'madrid') + get_cheapest_route('paris', 'madrid') + get_cheapest_route('london', 'madrid')
-#     print("Total prices per route: ",cost_from_place1, cost_from_place2, cost_from_place3)
-#     print("Cheapest destination is ", 'Madrid', 'which costs ', get_cheapest_route('munich', 'madrid'), get_cheapest_route('paris', 'madrid'), get_cheapest_route('london', 'madrid'), " respectively.")
-
-# get_best_destination()
