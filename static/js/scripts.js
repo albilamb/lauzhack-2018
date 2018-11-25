@@ -104,7 +104,13 @@ $("#search").click(function(){
 
     $.getJSON("http://127.0.0.1:5000/allplaces?place1=" + p1 + "&place2=" + p2 + "&place3=" + p3, function(data){
         for (var i=0; i<data.length; i++) {
-            $(".list-group").append('<div id='+ i +' class="list-group-item justify-content-between" style="cursor: pointer">'+ data[i].name +'</div>');
+            $(".list-group").append('<div id='+ i +' class="list-group-item justify-content-between" style="cursor: pointer"><a href="#modal-container-447899" role="button" data-toggle="modal">'+ data[i].name +'</a></div>');
+            $("#"+i).click(function(e){
+                var q = e.target.innerText;
+                $.getJSON("http://127.0.0.1:5000/placedetails?place1=" + p1 + "&place2=" + p2 + "&place3=" + p3 + "&query=" + q, function(data){
+                    console.log(data)
+                })
+            })
             var marker = new google.maps.Marker({position: {lat: data[i].lat, lng: data[i].lng}, label: data[i].name, map: window.map, icon: icons[iconIndex++ % icons.length]});
             window.localStorage.setItem(data[i].name, i);
         }
@@ -115,10 +121,22 @@ $("#search").click(function(){
         var k = window.localStorage.getItem(data.split(',')[0]);
         console.log(k);
         $("#"+k).append('<span class="badge badge-pill badge-primary">Fastest</span>')
+        var fastest = data.split(',')[0];
+        window.localStorage.setItem("fastest", fastest);
+        $.getJSON("http://127.0.0.1:5000/recommended?place1="+ p1 + "&place2=" + p2 + "&place3=" + p3, function(data){
+            console.log(data)
+            var r1 = "Take a " + data[0].place1.Name + " which takes " + data[0].place1.Duration + " mins and costs around " + data[0].place1.Price + " USD approx";
+            var r2 = "Take a " + data[0].place2.Name + " which takes " + data[0].place2.Duration + " mins and costs around " + data[0].place2.Price + " USD approx";
+            var r3 = "Take a " + data[0].place3.Name + " which takes " + data[0].place3.Duration + " mins and costs around " + data[0].place3.Price + " USD approx";
+            $("#routes").append('<h5 class="card-header">'+ p1 + ' -> ' + fastest +'</h5><p>'+r1+'</p>');
+            $("#routes").append('<h5 class="card-header">'+ p2 + ' -> ' + fastest +'</h5><p>'+r2+'</p>');
+            $("#routes").append('<h5 class="card-header">'+ p3 + ' -> ' + fastest +'</h5><p>'+r3+'</p>');
+        });
     });
     $.getJSON("http://127.0.0.1:5000/cheapestplace?place1=" + p1 + "&place2=" + p2 + "&place3=" + p3, function(data){
         var k = window.localStorage.getItem(data.split(',')[0]);
         console.log(k);
         $("#"+k).append('<span class="badge badge-pill badge-primary">Cheapest</span>')
+        window.localStorage.setItem("cheapest", data.split(',')[0]);
     });
 });
