@@ -105,6 +105,9 @@ $("#search").click(function(){
     $.getJSON("http://127.0.0.1:5000/allplaces?place1=" + p1 + "&place2=" + p2 + "&place3=" + p3, function(data){
         for (var i=0; i<data.length; i++) {
             $(".list-group").append('<div id='+ i +' class="list-group-item justify-content-between" style="cursor: pointer"><a href="#modal-container-447899" role="button" data-toggle="modal">'+ data[i].name +'</a></div>');
+            if (data[i].exotic) {
+                $("#"+i).append('<span class="badge badge-pill badge-primary">Exotic</span>');
+            }
             $("#"+i).click(function(e){
                 var q = e.target.innerText;
                 $.getJSON("http://127.0.0.1:5000/placedetails?place1=" + p1 + "&place2=" + p2 + "&place3=" + p3 + "&query=" + q, function(data){
