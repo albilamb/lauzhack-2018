@@ -88,9 +88,21 @@ def findall():
 
 @app.route('/placedetails/')
 def placedetails():
-    place = request.args.get('place', '')
-    data = get_geocode(place)
-    return jsonify(data)
+    place1 = request.args.get('place1', '')
+    place2 = request.args.get('place2', '')
+    place3 = request.args.get('place3', '')
+    query = request.args.get('query', '')
+    transit_map = []
+    transit1 = get_all_search(place1, query)[
+        "routes"][0]
+    transit_map.append(transit1)
+    transit2 = get_all_search(place2, query)[
+        "routes"][0]
+    transit_map.append(transit2)
+    transit3 = get_all_search(place3, query)[
+        "routes"][0]
+    transit_map.append(transit3)
+    return jsonify(transit_map)
 
 
 # Helper fuctions
