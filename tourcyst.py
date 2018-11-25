@@ -2,6 +2,9 @@ from flask import Flask, jsonify, request
 import requests
 from math import cos, sin, atan2, sqrt
 import json
+import numpy as np
+import pandas as pd
+
 
 app = Flask(__name__)
 rome2rio_key = 'yTPnfnRY'
@@ -80,10 +83,26 @@ def find_centriod(place1, place2, place3):
 def get_places(pnt):
     lat_lng_str = str(pnt['lat']) + ',' + str(pnt["lng"])
     payload = {"location": lat_lng_str,"radius":500,"type":"airports","key": "AIzaSyCNa0G19BABRTzrn2AyO6VyClwhM3iilOw"}
-    response = requests.get("https://maps.googleapis.com/maps/api/place/nearbysearch/json", params=payload)
+	
+    #response = requests.get("https://maps.googleapis.com/maps/api/place/nearbysearch/json", params=payload)
     # place = {"name": response.json()['results'][0]["name"], "lat": response.json()['results'][0]["geometry"]["location"]["lat"], "lng": response.json()['results'][0]["geometry"]["location"]["lng"]}
     # print(place)
-    data = response.json()
+    #data = response.json()
+	
+	city_list_df = pd.read_csv('biggest_cities.csv', sep =";")
+	range = 5
+	l=[]
+    test_df = city_list_df
+	lat_0 = pnt['lat']
+	lng_0 = pnt['lng']
+    test_df = test_df[(test_df.lat >lat_0 - range) & (test_df.lat <lat_0 + range)]
+    test_df = test_df[(test_df.lng >lng_0 - range) & (test_df.lng <lng_0 + range)]
+    possible_pts = test_df.reset_index()
+    for index,row in possible_pts.iterrows():
+        l += [{'lat': row['lat'], 'lng': row['lng'], 'name': row['name']}]
+	
+	response = l
+	data=response.json()
     places = []
     length=len(data['results'])
     for i in range(length):
