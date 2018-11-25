@@ -1,5 +1,9 @@
 var lastXhr;
 var latLngMap = {};
+var icons = ['http://maps.google.com/mapfiles/ms/icons/green-dot.png', 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png','http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'];
+var iconIndex=0;
+
+window.localStorage.clear();
 $( "#demo1" ).autocomplete({
     source: function( request, response ) {
         if (lastXhr) lastXhr.abort();
@@ -81,4 +85,29 @@ $( "#demo3" ).autocomplete({
         var marker = new google.maps.Marker({position: mark, label: "Sricharan", map: window.map})
         console.log(marker)
     }
+});
+
+$("#search").click(function(){
+    var p1 = $("#demo1")[0].value;
+    var p2 = $("#demo2")[0].value;
+    var p3 = $("#demo3")[0].value;
+
+    $.getJSON("http://127.0.0.1:5000/allplaces?place1=" + p1 + "&place2=" + p2 + "&place3=" + p3, function(data){
+        for (var i=0; i<data.length; i++) {
+            $(".list-group").append('<div id='+ i +' class="list-group-item justify-content-between" style="cursor: pointer">'+ data[i].name +'</div>');
+            var marker = new google.maps.Marker({position: {lat: data[i].lat, lng: data[i].lng}, label: data[i].name, map: window.map, icon: icons[iconIndex++ % icons.length]});
+            window.localStorage.setItem(data[i].name, i);
+        }
+        window.localStorage.setItem("cities", JSON.stringify(data));
+    });
+    $.getJSON("http://127.0.0.1:5000/fastestplace?place1=" + p1 + "&place2=" + p2 + "&place3=" + p3, function(data){
+        var k = window.localStorage.getItem(data.split(',')[0]);
+        console.log(k);
+        $("#"+k).append('<span class="badge badge-pill badge-primary">Fastest</span>')
+    });
+    $.getJSON("http://127.0.0.1:5000/cheapestplace?place1=" + p1 + "&place2=" + p2 + "&place3=" + p3, function(data){
+        var k = window.localStorage.getItem(data.split(',')[0]);
+        console.log(k);
+        $("#"+k).append('<span class="badge badge-pill badge-primary">Cheapest</span>')
+    });
 });

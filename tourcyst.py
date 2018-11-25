@@ -3,6 +3,8 @@ from flask_googlemaps import GoogleMaps, Map
 import requests
 from math import cos, sin, atan2, sqrt
 import json
+import pandas as pd
+import numpy as np
 
 app = Flask(__name__)
 rome2rio_key = 'yTPnfnRY'
@@ -16,15 +18,6 @@ mymap = Map(
         lng=6.613019,
         varname="jsmap"
 )
-
-
-def center_geolocation(geolocations):
-    lat = []
-    lng = []
-    for l in geolocations:
-        lat.append(l[0])
-        lng.append(l[1])
-    return (sum(lat)/len(lat), sum(lng)/len(lng))
 
 @app.route('/update-marker')
 def update_marker():
@@ -89,7 +82,7 @@ def findall():
     place1 = request.args.get('place1', '')
     place2 = request.args.get('place2', '')
     place3 = request.args.get('place3', '')
-    data = get_places(find_centriod(place1, place2, place3))
+    data = get_places(find_centriod(place1, place2, place3), place1, place2, place3)
     return jsonify(data)
 
 
@@ -103,7 +96,7 @@ def placedetails():
 # Helper fuctions
 
 def get_fastest_central(place1, place2, place3):
-    central = get_places(find_centriod(place1, place2, place3))
+    central = get_places(find_centriod(place1, place2, place3), place1, place2, place3)
     transits = []
     for c in central:
         transit_map = {}
@@ -121,17 +114,13 @@ def get_fastest_central(place1, place2, place3):
 
 
 def get_cheapest_central(place1, place2, place3):
-    central = get_places(find_centriod(
-        place1, place2, place3), place1, place2, place3)
+    central = get_places(find_centriod(place1, place2, place3), place1, place2, place3)
     transits = []
     for c in central:
         transit_map = {}
-        price1 = get_all_search(place1, c["name"])[
-            "routes"][0]["indicativePrices"][0]["price"]
-        price2 = get_all_search(place1, c["name"])[
-            "routes"][0]["indicativePrices"][0]["price"]
-        price3 = get_all_search(place1, c["name"])[
-            "routes"][0]["indicativePrices"][0]["price"]
+        price1 = get_all_search(place1, c["name"])["routes"][0]["indicativePrices"][0]["price"]
+        price2 = get_all_search(place1, c["name"])["routes"][0]["indicativePrices"][0]["price"]
+        price3 = get_all_search(place1, c["name"])["routes"][0]["indicativePrices"][0]["price"]
         transit_map["name"] = c["name"]
         transit_map["total_price"] = price1 + price2 + price3
         print("name: " + c["name"] + ", " +
@@ -206,7 +195,7 @@ def get_places(pnt, place1, place2, place3):
     city_list_df = city_list_df[(city_list_df.name != place1) &
                                 (city_list_df.name != place2) &
                                 (city_list_df.name != place3)]
-    rnge = 10
+    rnge = 5
     l = []
     test_df = city_list_df
     lat_0 = pnt['lat']
@@ -308,11 +297,11 @@ def get_recommended_central(place1, place2, place3):
 
 
 # find_centriod("Munich", "Madrid", "Paris")
-print(get_cheapest_central("Munich", "Madrid", "Paris"))
+# print(get_cheapest_central("Munich", "Madrid", "Paris"))
 # get_fastest_route("Munich", "Madrid", "Paris")
 # print(get_metrics_for_search("Munich", "Paris"))
 
-find_centriod("Munich", "Berlin", "Hyderabad")
+# find_centriod("Munich", "Berlin", "Hyderabad")
 
 # # TODO: Rewrite to get_best_destination(place1, place2, place3)
 # def get_best_destination():
