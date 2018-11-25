@@ -44,6 +44,8 @@ def center_geolocation(geolocations):
     coordinates['lng'] = sum(lng)/len(lng)
     return coordinates
 
+
+@app.route('/placedetails/')
 def get_geocode(query):
     payload = {"key":rome2rio_key, "query":query}
     response = requests.get("http://free.rome2rio.com/api/1.4/json/Geocode", params=payload)
@@ -74,7 +76,7 @@ def find_centriod(place1, place2, place3):
     # print(central)
     return central
 
-
+@app.route('/allplaces/')
 def get_places(pnt):
     lat_lng_str = str(pnt['lat']) + ',' + str(pnt["lng"])
     payload = {"location": lat_lng_str,"radius":500,"type":"airports","key": "AIzaSyCNa0G19BABRTzrn2AyO6VyClwhM3iilOw"}
@@ -92,7 +94,7 @@ def get_places(pnt):
     print("Places: " + str(places))
     return places
 
-
+@app.route('/fastestplace/')
 def get_fastest_transit_central(transits):
     best_transit = transits[0]["total_transit"]
     best_location = transits[0]["name"]
@@ -102,7 +104,7 @@ def get_fastest_transit_central(transits):
             best_location = transits[i]["name"]
     return best_location
 
-
+@app.route('/cheapestplace/')
 def get_cheapest_transit_central(transits):
     best_transit = transits[0]["total_price"]
     best_location = transits[0]["name"]
