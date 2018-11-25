@@ -170,7 +170,7 @@ def get_geocode(query):
 
 
 def get_all_search(place1, place2):
-    payload = {"key": rome2rio_key, "oName": place1, "dName": place2}
+    payload = {"key": rome2rio_key, "oName": place1, "dName": place2, "noAir": True, "noCar" : True}
     response = requests.get(
         "http://free.rome2rio.com/api/1.4/json/Search", params=payload)
     data = response.json()

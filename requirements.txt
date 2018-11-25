@@ -3,3 +3,5 @@ gunicorn==19.9.0
 jsonschema==2.6.0
 requests==2.18.4
 flask-googlemaps
+pandas
+numpy
