@@ -1,46 +1,10 @@
-// // Initialize and add the map
-// var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-// var labelIndex = 0;
-// var icons = ['http://maps.google.com/mapfiles/ms/icons/green-dot.png', 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png','http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'];
-// var iconIndex=0;
-
-// //Map initialization
-// var lausanne = {lat:46.537504, lng: 6.613019}
-
-// //Origin destinations
-// var city_A = {lat: 48.866, lng: 2.333}; //Paris
-// var city_B = {lat: 40.416775, lng: -3.70379}; //Madrid
-// var city_C = {lat: 50.85034, lng: 4.35171}; //Brussels
-
-// // Variable "calculation" set to 0 before the routing algorithm runs
-// // Variable set to 1 if algortihm has run
-// var calculation = 1;
-
-// var dest_A = {lat: 41.9027835, lng: 12.4963655}; //Rome
-// var dest_B = {lat: 55.676097, lng: 12.568337}; //Copenhagen
-
-// var origin_cities = [city_A, city_B, city_C];
-// var destination_cities = [dest_A, dest_B];
-
-// function initMap(calculation) {
-//     // The map, centered at lausanne
-//     var map = new google.maps.Map(
-//     document.getElementById('map'), {zoom: 4, center: lausanne});
-    
-//     // Markers positioned at the different origin cities
-//     //var count = origin_cities.length;
-//     for (var i = 0; i<origin_cities.length; i++) {
-//         var city = origin_cities[i];
-//         var marker = new google.maps.Marker({position: city, label: labels[labelIndex++ % labels.length], map: map}); 
-//     };
-//     if (calculation != 0) {
-//         for (var i = 0; i<destination_cities.length; i++) {
-//             var city = destination_cities[i];
-//             var marker = new google.maps.Marker({
-//                 position: city,
-//                 icon: icons[iconIndex++ % icons.length],
-//                 map: map,
-//                 title : 'Test' });
-//         }
-//     }
-// }
+/*!
+ * jAnimate v0.2.0
+ * https://github.com/renatorib/janimate
+ *
+ * Copyright (c) 2014-2015 Renato Ribeiro
+ * Released under the MIT license
+ *
+ * Date: 2015-07-02T11:43:03.268Z
+ */
+!function(a){"function"==typeof define&&define.amd?define(["jquery"],a):a("object"==typeof exports?require("jquery"):jQuery)}(function(a){function b(b){var c=this;this.opt=a.extend({},{el:!1,effects:!1,callback:!1},b),this.effects=this.opt.effects,this.el=this.opt.el,this.indx=0,this.callback=this.opt.callback,this.next=function(){a(this.el).jAnimateOnce(this.effects[this.indx],function(){c.indx++,"undefined"!=typeof c.effects[c.indx]?c.next():"undefined"!=typeof c.callback&&a.isFunction(c.callback)&&c.callback(c.el,c.effects)})}}function c(b){var c=this;this.opt=a.extend({},{once:!1,el:!1,effect:!1,callback:!1},b),this.older=a(this.opt.el).attr("data-janimate"),this.newer=d["class"]+this.opt.effect,this.once=this.opt.once,a(this.opt.el).removeClass(this.older).removeAttr(d.data),this.opt.el.offsetWidth=this.opt.el.offsetWidth,a(this.opt.el).addClass(this.newer).attr(d.data,this.newer),a(this.opt.el).one(d.animationend,function(){c.opt.once&&a(c.opt.el).removeClass(c.newer).removeAttr(d.data),"undefined"!=typeof c.opt.callback&&a.isFunction(c.opt.callback)&&c.opt.callback(c,c.opt.effect)})}var d={"class":"animated ",data:"data-janimate",animationend:"webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend"};a.fn.jAnimate=function(a,b){return this.each(function(){new c({el:this,effect:a,callback:b})})},a.fn.jAnimateOnce=function(a,b){return this.each(function(){new c({el:this,effect:a,callback:b,once:!0})})},a.fn.jAnimateSequence=function(c,d){return this.each(function(){return a.isArray(c)?void new b({el:this,effects:c,callback:d}).next():!1})}});

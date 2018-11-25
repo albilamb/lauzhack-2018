@@ -16,7 +16,8 @@ mymap = Map(
         identifier="view-side",
         lat=46.537504,
         lng=6.613019,
-        varname="jsmap"
+        varname="jsmap",
+        zoom=5
 )
 
 @app.route('/update-marker')

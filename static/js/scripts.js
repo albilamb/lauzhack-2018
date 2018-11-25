@@ -3,8 +3,15 @@ var latLngMap = {};
 var icons = ['http://maps.google.com/mapfiles/ms/icons/green-dot.png', 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png','http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'];
 var iconIndex=0;
 
+$('a[href*=\\#]').on('click', function(e) {
+    e.preventDefault();
+    console.log($(this))
+    $('html, body').animate({ scrollTop: $($(this).attr('href')).offset().top}, 500, 'linear');
+  });
+
 window.localStorage.clear();
 $( "#demo1" ).autocomplete({
+    appendTo: "#form1",
     source: function( request, response ) {
         if (lastXhr) lastXhr.abort();
         lastXhr = $.getJSON( "http://127.0.0.1:5000/geocode?query=" + request.term, request, function( data, status, xhr ) {
@@ -27,11 +34,13 @@ $( "#demo1" ).autocomplete({
         // console.log(jsmap)
         console.log(window.map)
         var marker = new google.maps.Marker({position: mark, label: "Shiva", map: window.map})
+        $(".ui-helper-hidden-accessible").css("display", "none");
         console.log(marker)
     }
 });
 
 $( "#demo2" ).autocomplete({
+    appendTo: "#form2",
     source: function( request, response ) {
         if (lastXhr) lastXhr.abort();
         lastXhr = $.getJSON( "http://127.0.0.1:5000/geocode?query=" + request.term, request, function( data, status, xhr ) {
@@ -61,6 +70,7 @@ $( "#demo2" ).autocomplete({
 });
 
 $( "#demo3" ).autocomplete({
+    appendTo: "#form3",
     source: function( request, response ) {
         if (lastXhr) lastXhr.abort();
         lastXhr = $.getJSON( "http://127.0.0.1:5000/geocode?query=" + request.term, request, function( data, status, xhr ) {
@@ -99,6 +109,7 @@ $("#search").click(function(){
             window.localStorage.setItem(data[i].name, i);
         }
         window.localStorage.setItem("cities", JSON.stringify(data));
+        $(".list-group").jAnimateSequence(['tada']);
     });
     $.getJSON("http://127.0.0.1:5000/fastestplace?place1=" + p1 + "&place2=" + p2 + "&place3=" + p3, function(data){
         var k = window.localStorage.getItem(data.split(',')[0]);
