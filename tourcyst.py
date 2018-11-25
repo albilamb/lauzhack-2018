@@ -324,7 +324,7 @@ def get_recommended_central(place1, place2, place3):
 # get_fastest_route("Munich", "Madrid", "Paris")
 # print(get_metrics_for_search("Munich", "Paris"))
 
-find_centriod("Munich", "Berlin", "Hyderabad")
+# find_centriod("Munich", "Berlin", "Hyderabad")
 
 # # TODO: Rewrite to get_best_destination(place1, place2, place3)
 # def get_best_destination():
