@@ -280,11 +280,50 @@ def get_metrics_for_search(place1, place2):
     return metrics
 
 
-def get_recommended_central(place1, place2, place3):
-    centrals = get_places(find_centriod(
-        place1, place2, place3), place1, place2, place3)
-    # TODO: Recommender logic goes here
-    return central
+@app.route('/recommended/')
+def recommended_route():
+    place1 = request.args.get('place1', '')
+    place2 = request.args.get('place2', '')
+    place3 = request.args.get('place3', '')
+    best_location=get_fastest_central(place1, place2, place3)
+    route_map=[]
+    route1=cent1(place1,best_location)
+    route2=cent1(place2,best_location)
+    route3=cent1(place3,best_location)
+    route_details={}
+    route_details['place1']=route1
+    route_details['place2']=route2
+    route_details['place3']=route3
+    route_map.append(route_details)#->best_location
+    return jsonify(route_map)
+    
+def cent1(place1,place2):
+    metrics = []
+    routes = get_all_search(place1, place2)["routes"]
+    for i in range(len(routes)):
+        route = {}
+        route["id"] = i
+        route["name"] = routes[i]["name"]
+        route["totalDuration"]  = routes[i]["totalDuration"]
+        #route["totalTransitDuration"]  = routes[i]["totalTransitDuration"]
+        route["indicativePrice"] = routes[i]["indicativePrices"][0]["price"]
+        metrics.append(route)
+    #print metrics
+    
+    length=len(metrics)
+    my_dict2=[]
+    for i in range(length):
+        my_dict2.append({"Duration":metrics[i]['totalDuration'],"Name":metrics[i]['name'].encode('utf-8'),
+                         "Price":metrics[i]['indicativePrice']})#,"Id":metrics[i]['id']})
+        #output -> {'Duration': 325, 'Price': 167, 'Name': 'Fly Paris CDG to Birmingham, train'}
+        
+    #print my_dict2
+    sorted_list=sorted(my_dict2, key=lambda k: k['Duration'])
+    #print sorted_list
+    length=len(sorted_list)
+    optimised=int(length/2)
+    return sorted_list[optimised]
+    #print statistics.median(my_dict2[0])#, key=lambda k: k['Duration'])#sorted(my_dict2, key=lambda k: k['Duration'])
 
 
 # def get_cheapest_route(place1, place2, place3):
